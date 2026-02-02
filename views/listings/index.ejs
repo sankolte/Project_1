@@ -1,0 +1,56 @@
+<% layout("/layouts/boilerplate") %>
+
+  <style>
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter {
+      text-align: center;
+      margin-right: 2rem;
+      margin-top: 2rem;
+      opacity: 0.7;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .filter:hover {
+      opacity: 1;
+    }
+
+    .filter p {
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+    }
+  </style>
+
+  <!-- Optional: Header Filters (Mockup) -->
+  <!-- <div id="filters">
+   <div class="filter">
+     <div><i class="fa-solid fa-fire"></i></div>
+     <p>Trending</p>
+   </div>
+   ...
+</div> -->
+
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <% for(let listing of all_listings) { %>
+      <a href="/listings/<%= listing._id %>" class="listing-link">
+        <div class="card col listing-card">
+          <!-- Helper to handle if image is object or string, based on schema it is object but just in case -->
+          <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+            <p class="card-text">
+              <b>
+                <%= listing.title %>
+              </b> <br>
+              &#8377; <%= listing.price.toLocaleString("en-IN") %> / night
+            </p>
+          </div>
+        </div>
+      </a>
+      <% } %>
+  </div>

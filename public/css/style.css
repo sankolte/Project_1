@@ -1,0 +1,221 @@
+/* Google Fonts - Plus Jakarta Sans */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary: #ff385c;
+    --dark: #222222;
+    --gray: #717171;
+    --light-gray: #dddddd;
+    --bg-color: #ffffff;
+    --card-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    --hover-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--dark);
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Navbar Customization */
+.navbar {
+    height: 5rem;
+    background-color: white;
+    border-bottom: 1px solid #ebebeb;
+}
+
+.navbar-brand {
+    color: var(--primary) !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-link {
+    color: var(--dark) !important;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--primary) !important;
+}
+
+/* Footer Customization */
+.f-info {
+    text-align: center;
+    display: flex;
+    height: 4rem;
+    background-color: #ebebeb;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    /* Pushes footer to bottom */
+}
+
+.f-info-links a {
+    text-decoration: none;
+    color: var(--dark);
+}
+
+.f-info-links a:hover {
+    text-decoration: underline;
+}
+
+.f-info-links,
+.f-info-brand,
+.f-info-socials {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.f-info-socials i {
+    margin-right: 1rem;
+    font-size: 1.2rem;
+}
+
+/* Card Styling */
+.listing-card {
+    border: none !important;
+    margin-bottom: 2rem;
+    transition: transform 0.2s;
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    aspect-ratio: 1/1 !important;
+    /* Square images looks modern */
+}
+
+.card-body {
+    padding: 0.5rem 0.2rem !important;
+}
+
+.card-text p {
+    font-weight: 400;
+}
+
+.listing-link {
+    text-decoration: none;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary) !important;
+    border: none !important;
+}
+
+.btn-search {
+    background-color: var(--primary);
+    color: white;
+    border-radius: 25px;
+    padding: 0 1rem 0 1rem;
+}
+
+.btn-search:hover {
+    background-color: #d93250;
+    color: white;
+}
+
+/* Form inputs */
+.form-control {
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+}
+
+.add-btn,
+.edit-btn {
+    background-color: var(--primary) !important;
+    border: none !important;
+}
+
+.show-img {
+    height: 30vh;
+    object-fit: cover;
+}
+
+.btns {
+    display: flex;
+}
+
+/* --- New Animations & Hover Effects --- */
+
+/* Smooth Fade In for Page Load */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Card Hover Effects */
+.listing-card {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.card-img-top {
+    transition: filter 0.3s ease;
+}
+
+.listing-card:hover .card-img-top {
+    filter: brightness(0.9);
+}
+
+/* Button Interactions */
+.btn {
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:hover, .add-btn:hover, .edit-btn:hover {
+    background-color: #e31c5f !important; /* Slightly darker primary */
+    opacity: 0.95;
+}
+
+/* Navbar Link Indicator */
+.nav-link {
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: var(--primary);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+    width: 80%;
+}
