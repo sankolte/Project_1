@@ -6,12 +6,16 @@ const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");   //this is the pakage used for whatver we did with bolerplate and other ejs files like ekk kiya design and then sabko usse hu banaya
 const wrapAsync=require("./utils/wrapAsync.js");                      
 const expressError=require("./utils/expressError.js");  
-const  listingSchema =require("./schema.js");
+// const  listingSchema =require("./schema.js");
+// const reviewSchema=require("./schema.js");
+
+const {listingSchema,reviewSchema}=require("./schema.js");   //right way to do it coz abb do do he jinhe hum export karr rahe waha se 
+
 
 
 
 const listing=require("./models/listing.js");
-const { ADDRGETNETWORKPARAMS } = require("dns");
+const review=require("./models/review.js");
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine","ejs");
@@ -36,7 +40,39 @@ async function main(){
    await mongoose.connect('mongodb://127.0.0.1:27017/come_and_live');
 
 }
+
+const validateListing=(req,res,next)=>{
+     let result=listingSchema.validate(req.body);
+     let {error}=result;
+
+        console.log(error);
+        if(error){
+            let errmsg=error.details.map((el)=>el.message).join(",");       //basically jer multiple goshti alyat in error msg then usko map function se and join se sab ekk sath print karr sakte
+            throw new expressError(400,errmsg);
+            
+        }else{
+            next();
+        }
+}
  
+    //for reviews
+
+const validateReview=(req,res,next)=>{
+    let result=reviewSchema.validate(req.body);
+     let {error}=result;
+
+        console.log(error);
+        if(error){
+            let errmsg=error.details.map((el)=>el.message).join(",");       
+            throw new expressError(400,errmsg);
+            
+        }else{
+            next();
+        }
+}
+
+
+
 // app.get("/listings",async (req,res)=>{
 //     const a =new listing({
 //         title:"grand palace",
@@ -64,13 +100,8 @@ async function main(){
 
        //create new route >> basically create new listing
 
-    app.post("/listings",wrapAsync(async(req,res)=>{
-        let result=listingSchema.validate(req.body);
-        console.log(result);
-        if(result.error){
-            throw new expressError(400,result.error.message);
-
-        }
+    app.post("/listings",validateListing,wrapAsync(async(req,res)=>{            
+          //basically wo validateListing func ko as a middleware pass kiya
      
     //   const { title, description, image, price, location, country } = req.body;
     //   const data = new listing({
@@ -103,6 +134,33 @@ async function main(){
     
     }));
 
+    //reviews ki gandmasti ke liye>>>
+    //post route
+
+    app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
+        //abb dekho idhar hume pehel ye id ka listing find karni he ok then iss listing me hume
+        // review add karna he 
+        //basically listing ke collection me hume uss reviews ke array me ye naya review add karna he 
+
+        
+        let {id}=req.params;
+        let Listing= await listing.findById(id);
+        let newReview=new review(req.body.review);  //wo hume review[rating] and review[comment] kiya na to basically easy hogaya
+        
+        Listing.reviews.push(newReview);
+
+        await newReview.save();
+        await Listing.save();
+        //basically abb wo array add hua he na listing collection ke under usko firse save karana padega
+        console.log("new review saved !!");
+
+        res.redirect("/listings");
+
+
+      }))
+
+
+
     //editing and updating ke liye firstly to render a form 
 
     app.get("/listings/:id/edit",wrapAsync(async (req,res)=>{
@@ -118,14 +176,8 @@ async function main(){
 
     
 
-    app.put("/listings/:id",wrapAsync(async (req,res)=>{
-         let result2=listingSchema.validate(req.body);
-        console.log(result2);
-        if(result2.error){
-            throw new expressError(400,result2.error.message);
-
-        }
-      
+    app.put("/listings/:id",validateListing,wrapAsync(async (req,res)=>{
+    
         let {id} =req.params;
         // const { title, description, image, price, location, country } = req.body;
         // const updateData = {
@@ -173,6 +225,7 @@ async function main(){
 
     })
 //akkhe code me error kaha bhi ho last me ayeaga yahi to the lat moddleware its the error handling middleware final boss
+
 let port=3000;
 
 app.listen(port,(req,res)=>{
