@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const Schema=mongoose.Schema;            //we used that reviews array there issliye ye chanhuye
 
+const review=require("./review.js");
+
+
 const listingSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -50,5 +53,15 @@ const listingSchema = new mongoose.Schema({
   
 });
 
+listingSchema.post("findOneAndDelete", async(data)=>{
+  if(data){
+  await review.deleteMany({_id:{$in:data.reviews}});      //basically delete all documenst where id is in data madhlya array mhanje basically jyana pan id asel te delete ya it is actually this simple hume sirf ekk logic chahiye tha 
+
+  }
+
+})
+
+
 const Listing = mongoose.model("listing", listingSchema);
+
 module.exports = Listing;

@@ -129,7 +129,8 @@ const validateReview=(req,res,next)=>{
 
     app.get("/listings/:id",wrapAsync(async (req,res)=>{
     let {id}=req.params;
-      const one=await listing.findById(id);
+      const one=await listing.findById(id).populate("reviews");          
+
       res.render("listings/show.ejs",{one});
     
     }));
@@ -156,6 +157,17 @@ const validateReview=(req,res,next)=>{
 
         res.redirect("/listings");
 
+
+      })) 
+      //deleting a review ke liy route
+
+      app.delete("/listings/:id/delete/:reviewId",wrapAsync(async(req,res)=>{
+        let { reviewId,id } =req.params;
+        await listing.findByIdAndUpdate(id,{$pull:{reviews:reviewId}});
+
+        const deletedReview= await review.findByIdAndDelete(reviewId);
+        console.log(deletedReview);  
+        res.redirect(`/listings/${id}`);
 
       }))
 
