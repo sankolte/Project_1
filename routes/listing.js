@@ -1,0 +1,138 @@
+const express=require("express");
+const router =express.Router();
+const wrapAsync=require("../utils/wrapAsync.js");  
+const {listingSchema}=require("../schema.js");   //right way to do it coz abb do do he jinhe hum export karr rahe waha se
+const expressError=require("../utils/expressError.js");
+
+const listing=require("../models/listing.js");
+
+const validateListing=(req,res,next)=>{
+     let result=listingSchema.validate(req.body);
+     let {error}=result;
+
+        console.log(error);
+        if(error){
+            let errmsg=error.details.map((el)=>el.message).join(",");       //basically jer multiple goshti alyat in error msg then usko map function se and join se sab ekk sath print karr sakte
+            throw new expressError(400,errmsg);
+            
+        }else{
+            next();
+        }
+}
+ 
+
+// app.get("/listings",async (req,res)=>{
+//     const a =new listing({
+//         title:"grand palace",
+//         information:"a nice place to stay",
+//         price:1200,
+//         image:"https//unsplash.com/photos/white-bed-linen-with-throw-pillows-Yrxr3bsPdS0",
+//         address:"Sakhare vasti road,hingewadi,pune"
+//     })
+//     await a.save()
+//     res.send("cool");
+// })
+
+//first route for showing of all listings 
+//index route
+
+    router.get("/",wrapAsync(async (req,res)=>{
+
+    const all_listings=await listing.find();
+    res.render("listings/index.ejs",{ all_listings});
+    console.log("ok data is sent to ejs file ");
+    
+   
+}))
+
+
+       //create new route >> basically create new listing
+
+    router.post("/",validateListing,wrapAsync(async(req,res)=>{            
+          //basically wo validateListing func ko as a middleware pass kiya
+     
+    //   const { title, description, image, price, location, country } = req.body;
+    //   const data = new listing({
+    //       title,
+    //       description,
+    //       image: { url: image, filename: "listingimage" },
+    //       price,
+    //       location,
+    //       country
+    //   });
+    //   await data.save();
+        const newListing=new listing(req.body.listing);
+        await newListing.save();
+      res.redirect("/listings");
+     
+   
+    }));
+
+    router.get("/new",(req,res)=>{
+        res.render("listings/new.ejs");
+        
+    })
+
+    //displaying a perticular se;ected listing
+
+    
+        //editing and updating ke liye firstly to render a form 
+    
+        router.get("/:id/edit",wrapAsync(async (req,res)=>{
+          
+    
+            let {id}=req.params;
+            const two=await listing.findById(id);
+            res.render("listings/edit.ejs",{two});
+            
+          
+        
+        }));
+    
+        
+    
+
+    router.get("/:id",wrapAsync(async (req,res)=>{
+    let {id}=req.params;
+      const one=await listing.findById(id).populate("reviews");          
+
+      res.render("listings/show.ejs",{one});
+    
+    }));
+
+    
+        router.put("/:id",validateListing,wrapAsync(async (req,res)=>{
+        
+            let {id} =req.params;
+            // const { title, description, image, price, location, country } = req.body;
+            // const updateData = {
+            //     title,
+            //     description,
+            //     image: { url: image, filename: "listingimage" },
+            //     price,
+            //     location,
+            //     country
+            // };
+            // const saveData = await listing.findByIdAndUpdate(id, updateData);
+            // console.log("data updated in db");
+    
+             await listing.findByIdAndUpdate(id,{...req.body.listing});
+            res.redirect("/listings");
+     
+        }));
+         
+    
+    
+            //deleting route>>>>>>>>>>>>>
+    
+        router.delete("/:id",wrapAsync(async (req,res)=>{
+            let {id}=req.params;
+           const deletedData= await listing.findByIdAndDelete(id);
+            res.redirect("/listings");
+            console.log(deletedData);
+        
+        
+        }));
+
+        module.exports=router;
+
