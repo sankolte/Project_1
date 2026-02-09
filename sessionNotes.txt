@@ -1,0 +1,64 @@
+Jo bhi he written in notes handwritten abput session that its a interaction between browser and server and basically it stores data in form of object about the session
+and tgen gives id to this thos obj or data and then id is passed to the browser cookie me dal ke ok....
+
+
+
+What is connect-flash?
+
+👉 connect-flash is a way to send temporary messages between requests using sessions.
+
+Think:
+
+✅ “Login successful”
+
+❌ “Invalid password”
+
+⚠️ “Please log in first”
+
+These messages:
+
+Live for ONE request
+
+Are shown once
+
+Then auto-deleted
+
+Basically: self-destructing messages 💣 (in a good way)
+
+Behind the scenes:
+
+User makes a request
+You store a flash message in session
+User is redirected
+Next request reads the message
+Message is deleted automatically
+👉 That’s why sessions are mandatory.
+workflow of flash connect
+
+so bascially iss sab e session ki kya importance ::: toh internally ye flash messages are stored in sessin object 
+HTTP forgets everything after a response.
+Session is the memory that survives.
+
+Session object (on server):
+
+req.session = {
+  userId: 42,
+  isLoggedIn: true,
+  flash: {
+    error: ["Wrong password"]
+  }
+}                                   like this >>>>>>>>>>>>>>>>
+
+
+worklflow of using these messages >>
+
+require it 
+app.use(flash());   in our app.js
+
+ata apan te res.render("index.js,ya sobat goshti nahi patavanr apan res.locals banauu);
+
+app.use((req,res,next)=>{
+  res.locals.success = req.flash("success);
+
+
+})

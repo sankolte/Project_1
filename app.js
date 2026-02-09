@@ -2,6 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const path = require("path");
+
+const session=require("express-session");
+const flash = require("connect-flash");
+
+
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");   //this is the pakage used for whatver we did with bolerplate and other ejs files like ekk kiya design and then sabko usse hu banaya
 const expressError = require("./utils/expressError.js");
@@ -16,6 +21,38 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
+
+
+
+//session>> 
+
+const sessionOptions = {
+    secret:"mysupersecret",
+    resave:"false",
+    saveUninitialized:"true",
+    cookie:{
+        expires:Date.now()+7*24*60*60*1000,
+        maxAge:7*24*60*60*1000,
+        httpOnly:true
+    }
+
+}
+
+app.use(session(sessionOptions));
+    //always write everything od session and connect flash before routes 
+    //coz routes are going to use them right so unse pehele hi chahiyee>>>>>>>
+app.use(flash());
+
+app.use((req,res,next)=>{
+    res.locals.success=req.flash("success");
+    res.locals.error=req.flash("error");
+    next();
+
+})  
+
+
+
+
 
 const listingsRoute = require("./routes/listing.js");
 const reviewRoute = require("./routes/review.js");
@@ -38,6 +75,8 @@ async function main() {
 
 }
 
+
+
 //this error handling middleware for perticularly managing page not found errror 
 app.use((req, res, next) => {
     next(new expressError(404, "Page not found!"))
@@ -55,8 +94,10 @@ app.use((err, req, res, next) => {
 })
 //akkhe code me error kaha bhi ho last me ayeaga yahi to the lat moddleware its the error handling middleware final boss
 
+
+
 let port = 3000;
 
 app.listen(port, (req, res) => {
     console.log(`The server is runnig at port no ${port}`);
-})
+});
