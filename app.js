@@ -6,13 +6,22 @@ const path = require("path");
 const session=require("express-session");
 const flash = require("connect-flash");
 
+const passport=require("passport");
+const LocalStrategy=require("passport-local");
+
+const User = require("./models/user.js");
+
+
+
 
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");   //this is the pakage used for whatver we did with bolerplate and other ejs files like ekk kiya design and then sabko usse hu banaya
 const expressError = require("./utils/expressError.js");
 
-// const  listingSchema =require("./schema.js");
-// const reviewSchema=require("./schema.js");
+const listingsRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
+
 
 
 app.set("views", path.join(__dirname, "views"));
@@ -28,12 +37,13 @@ app.engine("ejs", ejsMate);
 
 const sessionOptions = {
     secret:"mysupersecret",
-    resave:"false",
-    saveUninitialized:"true",
+    resave:false,
+    saveUninitialized:true,
     cookie:{
         expires:Date.now()+7*24*60*60*1000,
         maxAge:7*24*60*60*1000,
         httpOnly:true
+        
     }
 
 }
@@ -43,23 +53,53 @@ app.use(session(sessionOptions));
     //coz routes are going to use them right so unse pehele hi chahiyee>>>>>>>
 app.use(flash());
 
+
+//here sara passport ka configration set karte hue>>
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req,res,next)=>{
     res.locals.success=req.flash("success");
     res.locals.error=req.flash("error");
+    //we know that res.locals can be direct accessed in ejs so issiliye logout and login ka logic likhne ke liye ye use karr rahe 
+    res.locals.currentUser=req.user;
+    //chahe to ekk seprate middleware bhi bana sakte 
+    //but he to kyu
     next();
 
 })  
+ 
+
+
+// app.get("/demoUser",async (req,res)=>{
+//     const newUser=new User({
+//         email:"sank@gmail.com",
+//         username:"kahipani"
+//     })
+
+//    let xyz=await User.register(newUser,"helloworld");
+//    res.send(xyz);
+
+// });
 
 
 
 
 
-const listingsRoute = require("./routes/listing.js");
-const reviewRoute = require("./routes/review.js");
-app.use("/listings/:id/reviews", reviewRoute);
-app.use("/listings", listingsRoute);
 
 
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/listings", listingsRouter);
+app.use("/",userRouter);
+
+
+ 
 main()
     .then(() => {
         console.log("connection succesful !!");

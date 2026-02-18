@@ -7,6 +7,10 @@ const expressError=require("../utils/expressError.js");
 
 const listing=require("../models/listing.js");
 
+const {isLoggedIn}=require("../middleware.js");
+
+
+
 const validateListing=(req,res,next)=>{
      let result=listingSchema.validate(req.body);
      let {error}=result;
@@ -70,8 +74,12 @@ const validateListing=(req,res,next)=>{
    
     }));
 
-    router.get("/new",(req,res)=>{
-        res.render("listings/new.ejs");
+
+    //ha ahe new listing cha but for optimisig cdoe like more specific routes upper issi liye ye yaha likha he
+    router.get("/new",isLoggedIn,(req,res)=>{
+
+             res.render("listings/new.ejs");
+        
         
     })
 
@@ -80,7 +88,7 @@ const validateListing=(req,res,next)=>{
     
         //editing and updating ke liye firstly to render a form 
     
-        router.get("/:id/edit",wrapAsync(async (req,res)=>{
+        router.get("/:id/edit",isLoggedIn,wrapAsync(async (req,res)=>{
           
     
             let {id}=req.params;
@@ -139,7 +147,7 @@ const validateListing=(req,res,next)=>{
     
             //deleting route>>>>>>>>>>>>>
     
-        router.delete("/:id",wrapAsync(async (req,res)=>{
+        router.delete("/:id",isLoggedIn,wrapAsync(async (req,res)=>{
             let {id}=req.params;
            const deletedData= await listing.findByIdAndDelete(id);
            req.flash("success","listeing deleted");
