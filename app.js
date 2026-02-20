@@ -21,7 +21,7 @@ const expressError = require("./utils/expressError.js");
 const listingsRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
-
+   
 
 
 app.set("views", path.join(__dirname, "views"));

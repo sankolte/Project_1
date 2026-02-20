@@ -67,6 +67,9 @@ const validateListing=(req,res,next)=>{
     //   });
     //   await data.save();
         const newListing=new listing(req.body.listing);
+        //but now we have added a new field owner in whcih username hume print karana he but here wo form me nahi he to req.body.listing usse acces nahi kar sakte 
+        newListing.owner = req.user._id;
+        //here newlisting me owner add kiya and usme req.user jo hota he passport ki badolat usse if le li to bascially populat karega tab ajjeyga sab 
         await newListing.save();
         req.flash("success","Listing created succesfully");
       res.redirect("/listings");
@@ -109,7 +112,7 @@ const validateListing=(req,res,next)=>{
 
     router.get("/:id",wrapAsync(async (req,res)=>{
     let {id}=req.params;
-      const one=await listing.findById(id).populate("reviews");    
+      const one=await listing.findById(id).populate("reviews").populate("owner");    
       
       if(!one){
           req.flash("error","The listing does not exist !!");
