@@ -1,3 +1,8 @@
+
+const listing=require("./models/listing.js");
+const review = require("./models/review.js");
+
+
 function isLoggedIn(req, res, next) {
     if (!req.isAuthenticated()) {
 
@@ -35,4 +40,45 @@ function saveRedirectUrl(req,res,next){
 
 }
 
-module.exports={isLoggedIn,saveRedirectUrl};
+// module.exports={isLoggedIn,saveRedirectUrl};
+
+
+
+
+
+async function isOwner(req,res,next){
+
+            let {id}=req.params;
+
+    
+           let list= await listing.findById(id);
+       
+           if(!list.owner.equals(req.user._id)){                           //basically sabse pehele id nikala and then usko check kiya ki jo owner he wo current user ke same he ya nahi 
+                req.flash("error","user is not authorised");
+                return res.redirect(`/listings/${id}`);                          //return kiya coz firr ageke cheese exicute honge nhi to fir we know return ends the fuc  
+
+           }
+           next();
+
+}
+
+// module.exports={isLoggedIn,saveRedirectUrl,isOwner};
+
+
+
+async function isReviewAuthor(req,res,next){
+
+           let { id, reviewId } = req.params;
+            let r=await review.findById(reviewId);
+            console.log(r);
+            // console.log(list2.author);
+            if(!r.author.equals(req.user._id)){
+                 req.flash("error","user is not authorised");
+                  return res.redirect(`/listings/${id}`);  //coz redirect to wo apna ho he perticular listing wala page uspe h hoga ma >>>  
+
+            }
+            next();
+
+}
+
+module.exports={isLoggedIn,saveRedirectUrl,isOwner,isReviewAuthor};

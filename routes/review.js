@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });    // we ahve :id right so uss ke liye params ko preserve rakhne ke liye we use this >>
-
+const {isLoggedIn}=require("../middleware.js");
+const {isReviewAuthor}=require("../middleware.js");
 const wrapAsync = require("../utils/wrapAsync.js");  
 const expressError = require("../utils/expressError.js");
 const review = require("../models/review.js");
@@ -18,21 +19,26 @@ const validateReview = (req,res,next)=>{
 };
 
 // CREATE REVIEW
-router.post("/", validateReview, wrapAsync(async(req,res)=>{
+router.post("/", isLoggedIn,validateReview, wrapAsync(async(req,res)=>{
   let { id } = req.params;
   let Listing = await listing.findById(id);
   
   let newReview = new review(req.body.review);
 
+  newReview.author=req.user._id;
+
   Listing.reviews.push(newReview);
+
   await newReview.save();
   await Listing.save();
+  console.log(newReview);
+  
   req.flash("success","review created !!")
   res.redirect(`/listings/${id}`);
 }));
 
 // DELETE REVIEW
-router.delete("/:reviewId", wrapAsync(async(req,res)=>{
+router.delete("/:reviewId",isLoggedIn,isReviewAuthor,wrapAsync(async(req,res)=>{
   let { id, reviewId } = req.params;
 
   await listing.findByIdAndUpdate(id, {

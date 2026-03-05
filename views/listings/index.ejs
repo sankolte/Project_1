@@ -1,57 +1,142 @@
 <% layout("/layouts/boilerplate") %>
 
-
   <style>
-    #filters {
+    .filter-container {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
+      gap: 1.5rem;
+      padding: 1.5rem 0;
+      overflow-x: auto;
+      border-bottom: 1px solid #ebebeb;
+      margin-bottom: 2rem;
     }
 
     .filter {
-      text-align: center;
-      margin-right: 2rem;
-      margin-top: 2rem;
-      opacity: 0.7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border: 1px solid transparent;
+      border-radius: 12px;
       cursor: pointer;
-      transition: opacity 0.2s;
+      transition: all 0.2s;
+      white-space: nowrap;
+      opacity: 0.7;
     }
 
     .filter:hover {
       opacity: 1;
+      border-color: #dddddd;
+      background-color: #f7f7f7;
+    }
+
+    .filter i {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
     }
 
     .filter p {
-      font-size: 0.8rem;
-      margin-top: 0.25rem;
+      font-size: 0.75rem;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .listing-card {
+      border: none !important;
+      transition: transform 0.2s ease;
+      margin-bottom: 2rem;
+    }
+
+    .listing-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .listing-card .card-img-top {
+      height: 280px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .listing-card .card-body {
+      padding: 0.75rem 0;
+    }
+
+    .listing-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #222222;
+      margin-bottom: 0.25rem;
+    }
+
+    .listing-price {
+      font-weight: 600;
+      color: #222222;
+    }
+
+    .listing-price-label {
+      font-weight: 400;
+      color: #717171;
+    }
+
+    .listing-link {
+      text-decoration: none;
+      color: inherit;
     }
   </style>
 
-  <!-- Optional: Header Filters (Mockup) -->
-  <!-- <div id="filters">
-   <div class="filter">
-     <div><i class="fa-solid fa-fire"></i></div>
-     <p>Trending</p>
-   </div>
-   ...
-</div> -->
-
-  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
-    <% for(let listing of all_listings) { %>
-      <a href="/listings/<%= listing._id %>" class="listing-link">
-        <div class="card col listing-card">
-          <!-- Helper to handle if image is object or string, based on schema it is object but just in case -->
-          <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
-          <div class="card-img-overlay"></div>
-          <div class="card-body">
-            <p class="card-text">
-              <b>
-                <%= listing.title %>
-              </b> <br>
-              &#8377; <%= listing.price.toLocaleString("en-IN") %> / night
-            </p>
-          </div>
-        </div>
-      </a>
-      <% } %>
+  <!-- Category Filters -->
+  <div class="filter-container">
+    <div class="filter">
+      <i class="fa-solid fa-fire"></i>
+      <p>Trending</p>
+    </div>
+    <div class="filter">
+      <i class="fa-solid fa-umbrella-beach"></i>
+      <p>Beachfront</p>
+    </div>
+    <div class="filter">
+      <i class="fa-solid fa-mountain"></i>
+      <p>Mountains</p>
+    </div>
+    <div class="filter">
+      <i class="fa-solid fa-city"></i>
+      <p>Urban</p>
+    </div>
+    <div class="filter">
+      <i class="fa-solid fa-tree"></i>
+      <p>Nature</p>
+    </div>
+    <div class="filter">
+      <i class="fa-solid fa-water"></i>
+      <p>Lakefront</p>
+    </div>
+    <div class="filter">
+      <i class="fa-solid fa-igloo"></i>
+      <p>Arctic</p>
+    </div>
+    <div class="filter">
+      <i class="fa-solid fa-house-user"></i>
+      <p>Cabins</p>
+    </div>
   </div>
+
+  <!-- Listings Grid -->
+  <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1">
+    <% for(let listing of all_listings) { %>
+      <div class="col">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+          <div class="card listing-card">
+            <img src="<%= listing.image.url %>" class="card-img-top" alt="<%= listing.title %>">
+            <div class="card-body">
+              <div class="listing-title"><%= listing.title %></div>
+              <div class="text-muted" style="font-size: 0.875rem;"><%= listing.location %></div>
+              <div class="mt-1">
+                <span class="listing-price">&#8377; <%= listing.price.toLocaleString("en-IN") %></span>
+                <span class="listing-price-label">/ night</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    <% } %>
+  </div>
+  

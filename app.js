@@ -1,5 +1,9 @@
+require('dotenv').config();
+
+
 const express = require("express");
 const mongoose = require("mongoose");
+
 const app = express();
 const path = require("path");
 
@@ -23,17 +27,20 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
    
 
-
+//config
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
+//middlewares 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
+app.use("/uploads", express.static("uploads"));  //so basically we added this line so that my uploads should be visible to internet
 
 
 
-//session>> 
+//session>> and sessions ke middlewares 
 
 const sessionOptions = {
     secret:"mysupersecret",
@@ -75,6 +82,10 @@ app.use((req,res,next)=>{
 
 })  
  
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/listings", listingsRouter);
+app.use("/",userRouter);
+
 
 
 // app.get("/demoUser",async (req,res)=>{
@@ -87,16 +98,6 @@ app.use((req,res,next)=>{
 //    res.send(xyz);
 
 // });
-
-
-
-
-
-
-
-app.use("/listings/:id/reviews", reviewRouter);
-app.use("/listings", listingsRouter);
-app.use("/",userRouter);
 
 
  
@@ -114,7 +115,7 @@ async function main() {
     await mongoose.connect('mongodb://127.0.0.1:27017/come_and_live');
 
 }
-
+// mongodb+srv://koltesanskar1406:J3Nxr1dhYOZb9EaR@cluster0.ly71dmk.mongodb.net/?appName=Cluster0
 
 
 //this error handling middleware for perticularly managing page not found errror 
@@ -123,7 +124,7 @@ app.use((req, res, next) => {
 
 })
 
-// error handling middlewares >>  used by express like anything happens in the app express sidah comes to this coz wrapasync ke karan sab ka catch me yahi he 
+// error handling middlewares >>  used by express like anything happens in the app express sidah comes to this coz wrapasync ke karan sab ka catch me yahi he basically error yea to next error handling middleware pe kudegae na and next to yahi he 
 app.use((err, req, res, next) => {
     let { statusCode, message } = err;
     // res.status(statusCode).send(message);

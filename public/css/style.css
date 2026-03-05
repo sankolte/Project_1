@@ -219,3 +219,53 @@ body {
 .nav-link:hover::after {
     width: 80%;
 }
+
+/* Star Rating System */
+.starability-basic {
+    display: block;
+    position: relative;
+    width: 150px;
+    min-height: 30px;
+    padding: 0;
+    border: none;
+}
+
+.starability-basic input {
+    position: absolute;
+    margin-right: -100%;
+    opacity: 0;
+}
+
+.starability-basic > label {
+    position: relative;
+    display: inline-block;
+    float: left;
+    width: 30px;
+    height: 30px;
+    font-size: 0.1em;
+    color: transparent;
+    cursor: pointer;
+    background-repeat: no-repeat;
+}
+
+.starability-basic > label::before {
+    content: '★';
+    position: absolute;
+    font-size: 30px;
+    color: #ddd;
+    line-height: 1;
+}
+
+.starability-basic > label:hover::before,
+.starability-basic > label:hover ~ label::before {
+    color: #ff385c;
+}
+
+.starability-basic > input:checked + label::before,
+.starability-basic > input:checked + label ~ label::before {
+    color: #ff385c;
+}
+
+.starability-basic .input-no-rate {
+    display: none;
+}
